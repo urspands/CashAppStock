@@ -1,9 +1,9 @@
-package com.raj.stocksapp
+package com.raj.stocksapp.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.raj.stocksapp.R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
