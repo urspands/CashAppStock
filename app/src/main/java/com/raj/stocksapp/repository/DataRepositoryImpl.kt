@@ -5,6 +5,8 @@ import com.raj.stocksapp.api.StockApi
 
 class DataRepositoryImpl(private val stockApi: StockApi) : DataRepository {
     override suspend fun getPortfolioStocks(): PortfolioResponse {
+//        return stockApi.getPortfolioStocksMalformed()
+        //uncomment above line and comment below line to get malformed response
         return stockApi.getPortfolioStocks()
     }
 

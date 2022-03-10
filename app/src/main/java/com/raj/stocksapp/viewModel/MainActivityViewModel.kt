@@ -4,11 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.stream.MalformedJsonException
 import com.raj.stocksapp.api.Stock
 import com.raj.stocksapp.repository.DataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 /**
@@ -23,11 +24,28 @@ class MainActivityViewModel @Inject constructor(private val repository: DataRepo
     private val _data: MutableLiveData<List<Stock>> = MutableLiveData()
     val data: LiveData<List<Stock>> get() = _data
 
+    private val _showGenericError: MutableLiveData<Boolean> = MutableLiveData()
+    val showGenericError: LiveData<Boolean> get() = _showGenericError
+    private val _showInternetError: MutableLiveData<Boolean> = MutableLiveData()
+    val showInternetError: LiveData<Boolean> get() = _showInternetError
+    private val _showProgress: MutableLiveData<Boolean> = MutableLiveData()
+    val showProgress: LiveData<Boolean> get() = _showProgress
 
     fun getPortfolioData() {
         viewModelScope.launch {
-            val response = repository.getPortfolioStocks()
-            _data.value = response.stocks
+            try {
+                _showProgress.value= true
+                _data.value = repository.getPortfolioStocks().stocks
+                _showProgress.value= false
+            } catch (t: Throwable) {
+                _showProgress.value= false
+                when (t) {
+                    is MalformedJsonException-> _showGenericError.value = true
+                    is IOException -> _showInternetError.value = true
+                    else -> _showGenericError.value = true
+                }
+            }
+
         }
     }
 }

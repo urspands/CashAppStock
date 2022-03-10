@@ -1,14 +1,17 @@
 package com.raj.stocksapp.view
 
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.raj.stocksapp.R
 import com.raj.stocksapp.adapter.StockListAdapter
-import com.raj.stocksapp.api.Stock
 import com.raj.stocksapp.databinding.ActivityMainBinding
 import com.raj.stocksapp.viewModel.MainActivityViewModel
+
 
 class MainActivity : BaseActivity() {
     companion object {
@@ -16,8 +19,9 @@ class MainActivity : BaseActivity() {
     }
 
     private lateinit var _binding: ActivityMainBinding
-    private val viewModel: MainActivityViewModel by viewModels()
+    private val _viewModel: MainActivityViewModel by viewModels()
     private lateinit var _stockListAdapter: StockListAdapter
+    private lateinit var _dialog: Dialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
@@ -35,7 +39,8 @@ class MainActivity : BaseActivity() {
 
             }
         }
-        viewModel.data.observe(this) {
+        initProgressDialog()
+        _viewModel.data.observe(this) {
             Log.d(TAG, "onCreate: response size -> ${it.size}")
             if (_binding.recyclerView.adapter == null) {
                 _stockListAdapter = StockListAdapter(ArrayList(it))
@@ -44,7 +49,32 @@ class MainActivity : BaseActivity() {
                 _stockListAdapter.addStocks(it)
             }
         }
+        _viewModel.showGenericError.observe(this) {
+            showErrorAlertDialog(getString(R.string.generic_error_msg))
+        }
+        _viewModel.showInternetError.observe(this) {
+            showErrorAlertDialog(getString(R.string.internet_error_msg))
+        }
+        _viewModel.showProgress.observe(this) {
+            if (it)
+                _dialog.show()
+            else
+                _dialog.dismiss()
+        }
 
-        viewModel.getPortfolioData()
+        _viewModel.getPortfolioData()
+    }
+
+    private fun initProgressDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setView(R.layout.progress_layout)
+        _dialog = builder.create()
+    }
+
+    private fun showErrorAlertDialog(errorMsg: String) {
+        AlertDialog.Builder(this).setTitle(R.string.error).setMessage(errorMsg)
+            .setPositiveButton(
+                R.string.okay
+            ) { dialog, _ -> dialog.dismiss() }.setCancelable(false).show()
     }
 }
