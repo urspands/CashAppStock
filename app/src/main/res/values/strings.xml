@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">StocksApp</string>
+    <string name="stock_quantity">Quantity : %s</string>
+    <string name="stock_price">$%s</string>
 </resources>

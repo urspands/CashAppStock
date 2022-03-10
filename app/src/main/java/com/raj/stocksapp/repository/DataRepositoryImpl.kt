@@ -5,7 +5,7 @@ import com.raj.stocksapp.api.StockApi
 
 class DataRepositoryImpl(private val stockApi: StockApi) : DataRepository {
     override suspend fun getPortfolioStocks(): PortfolioResponse {
-        TODO("Not yet implemented")
+        return stockApi.getPortfolioStocks()
     }
 
 
