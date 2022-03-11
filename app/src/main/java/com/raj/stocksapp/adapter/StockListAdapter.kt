@@ -7,6 +7,12 @@ import com.raj.stocksapp.R
 import com.raj.stocksapp.api.Stock
 import com.raj.stocksapp.databinding.ItemStockBinding
 
+/**
+ * Stock list adapter
+ * adapter to list porfolio stocks
+ * @property _stocks
+ * @constructor Create empty Stock list adapter
+ */
 class StockListAdapter(private val _stocks: ArrayList<Stock>) :
     RecyclerView.Adapter<StockListAdapter.StockViewHolder>() {
 
@@ -15,7 +21,6 @@ class StockListAdapter(private val _stocks: ArrayList<Stock>) :
         fun bind(stock: Stock) {
             itemStockBinding.name.text = stock.name
             itemStockBinding.ticker.text = stock.ticker
-
             itemStockBinding.quantity.apply {
 
                 text = itemStockBinding.root.context.getString(
@@ -48,9 +53,4 @@ class StockListAdapter(private val _stocks: ArrayList<Stock>) :
         return _stocks.size
     }
 
-    fun addStocks(stocks: List<Stock>) {
-        val positionStart = _stocks.size + 1;
-        _stocks.addAll(stocks)
-        notifyItemRangeInserted(positionStart, _stocks.size)
-    }
 }

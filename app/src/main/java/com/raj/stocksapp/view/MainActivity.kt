@@ -21,7 +21,7 @@ class MainActivity : BaseActivity() {
 
     private lateinit var _binding: ActivityMainBinding
     private val _viewModel: MainActivityViewModel by viewModels()
-    private lateinit var _stockListAdapter: StockListAdapter
+
     private lateinit var _dialog: Dialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,12 +45,7 @@ class MainActivity : BaseActivity() {
         // observe server data to display in recycler view
         _viewModel.data.observe(this) {
             Log.d(TAG, "onCreate: response size -> ${it.size}")
-            if (_binding.recyclerView.adapter == null) {
-                _stockListAdapter = StockListAdapter(ArrayList(it))
-                _binding.recyclerView.adapter = _stockListAdapter
-            } else {
-                _stockListAdapter.addStocks(it)
-            }
+            _binding.recyclerView.adapter = StockListAdapter(ArrayList(it))
         }
         // observe data to show and hide generic error
         _viewModel.showGenericError.observe(this) {
