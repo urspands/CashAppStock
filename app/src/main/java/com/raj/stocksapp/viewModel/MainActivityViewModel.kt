@@ -30,17 +30,22 @@ class MainActivityViewModel @Inject constructor(private val repository: DataRepo
     val showInternetError: LiveData<Boolean> get() = _showInternetError
     private val _showProgress: MutableLiveData<Boolean> = MutableLiveData()
     val showProgress: LiveData<Boolean> get() = _showProgress
+    private val _showEmptyState: MutableLiveData<Boolean> = MutableLiveData()
+    val showEmptyState: LiveData<Boolean> get() = _showEmptyState
 
     fun getPortfolioData() {
         viewModelScope.launch {
             try {
-                _showProgress.value= true
-                _data.value = repository.getPortfolioStocks().stocks
-                _showProgress.value= false
+                _showProgress.value = true
+                val response = repository.getPortfolioStocks().stocks
+                _data.value = response
+                _showEmptyState.value = response.isEmpty()
+                _showProgress.value = false
             } catch (t: Throwable) {
-                _showProgress.value= false
+                _showEmptyState.value = true
+                _showProgress.value = false
                 when (t) {
-                    is MalformedJsonException-> _showGenericError.value = true
+                    is MalformedJsonException -> _showGenericError.value = true
                     is IOException -> _showInternetError.value = true
                     else -> _showGenericError.value = true
                 }

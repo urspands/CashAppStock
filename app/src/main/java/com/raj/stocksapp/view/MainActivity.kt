@@ -3,6 +3,7 @@ package com.raj.stocksapp.view
 import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -26,6 +27,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(_binding.root)
+        //Setup recycler View
         _binding.apply {
             recyclerView.apply {
                 layoutManager = LinearLayoutManager(context)
@@ -40,6 +42,7 @@ class MainActivity : BaseActivity() {
             }
         }
         initProgressDialog()
+        // observe server data to display in recycler view
         _viewModel.data.observe(this) {
             Log.d(TAG, "onCreate: response size -> ${it.size}")
             if (_binding.recyclerView.adapter == null) {
@@ -49,19 +52,27 @@ class MainActivity : BaseActivity() {
                 _stockListAdapter.addStocks(it)
             }
         }
+        // observe data to show and hide generic error
         _viewModel.showGenericError.observe(this) {
             showErrorAlertDialog(getString(R.string.generic_error_msg))
         }
+        // observe data to show and hide internet error
         _viewModel.showInternetError.observe(this) {
             showErrorAlertDialog(getString(R.string.internet_error_msg))
         }
+        // observe data to show and hide progress bar
         _viewModel.showProgress.observe(this) {
             if (it)
                 _dialog.show()
             else
                 _dialog.dismiss()
         }
-
+        // observe data to show and hide emptyState
+        _viewModel.showEmptyState.observe(this) {
+            _binding.emptyState.visibility = if (it) View.VISIBLE else View.GONE
+            _binding.recyclerView.visibility = if (it) View.GONE else View.VISIBLE
+        }
+        // get data from the server
         _viewModel.getPortfolioData()
     }
 
